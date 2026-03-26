@@ -1,0 +1,455 @@
+"""
+Seed data for Crop Advisory System
+3 Crops: Paddy, Chilli, Coffee
+Each crop has 3-5 diseases and 2-3 pests
+"""
+
+
+def seed_database(db, Crop, Disease, Pest):
+    """Populate the database with initial crop, disease, and pest data."""
+
+    # Check if data already exists
+    if Crop.query.first():
+        return
+
+    # ==================== PADDY ====================
+    paddy = Crop(
+        name="Paddy (Rice)",
+        scientific_name="Oryza sativa",
+        description="Paddy is one of the most important staple food crops, "
+                    "cultivated widely in tropical and subtropical regions. "
+                    "It requires warm climate (20–37°C) and abundant water supply. "
+                    "India is the second-largest producer of rice globally.",
+        season="Kharif (June–Nov), Rabi/Boro (Nov–May), Summer (Jan–May) in irrigated areas",
+        image_url="https://images.unsplash.com/photo-1536304993881-460346153e6a?w=400"
+    )
+    db.session.add(paddy)
+    db.session.flush()
+
+    paddy_diseases = [
+        Disease(
+            name="Blast Disease",
+            crop_id=paddy.id,
+            symptoms="Diamond-shaped lesions on leaves with grey or white center and brown border. "
+                     "Infected nodes turn black and break. Neck blast causes panicle to fall over.",
+            cause="Fungus Magnaporthe oryzae; favored by high humidity, low temperature, and excess nitrogen.",
+            prevention="Use resistant varieties (e.g., CO-39, IR-64). Avoid excessive nitrogen fertilizer. "
+                       "Maintain proper spacing. Remove and destroy infected crop residues.",
+            organic_treatment="Apply Trichoderma viride (5g/kg seed) as seed treatment. "
+                              "Spray Pseudomonas fluorescens (10g/L). Use neem oil spray (5ml/L).",
+            chemical_treatment="Spray Tricyclazole 75% WP (0.6g/L) or Isoprothiolane 40% EC (1.5ml/L). "
+                               "Apply Carbendazim 50% WP (1g/L) at boot leaf stage.",
+            chemical_composition="Tricyclazole (C₉H₇N₃S): Systemic fungicide inhibiting melanin biosynthesis. "
+                                 "Carbendazim (C₉H₉N₃O₂): Broad-spectrum benzimidazole fungicide.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Rice_blast_leaf_lesion.jpg/400px-Rice_blast_leaf_lesion.jpg"
+        ),
+        Disease(
+            name="Bacterial Leaf Blight",
+            crop_id=paddy.id,
+            symptoms="Water-soaked, yellowish stripes on leaf margins that enlarge and turn white/grey. "
+                     "Leaves dry up from tip to base. Milky bacterial ooze in early morning.",
+            cause="Bacterium Xanthomonas oryzae pv. oryzae; spreads through wind, rain, and contaminated irrigation.",
+            prevention="Use certified disease-free seeds. Grow resistant varieties (e.g., Improved Samba Mahsuri). "
+                       "Avoid clipping seedling tips during transplanting. Balanced fertilization.",
+            organic_treatment="Spray neem oil (5ml/L) mixed with Pseudomonas fluorescens. "
+                              "Apply fermented buttermilk spray (10% concentration).",
+            chemical_treatment="Spray Streptomycin sulphate + Tetracycline (300g/ha) mixed with Copper oxychloride 50% WP (2.5g/L). "
+                               "Soak seeds in Agrimycin-100 (0.025%) for 12 hours.",
+            chemical_composition="Streptomycin (C₂₁H₃₉N₇O₁₂): Aminoglycoside antibiotic. "
+                                 "Copper oxychloride (3Cu(OH)₂·CuCl₂): Protective copper fungicide/bactericide.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bacterial_blight_of_rice.jpeg/400px-Bacterial_blight_of_rice.jpeg"
+        ),
+        Disease(
+            name="Sheath Blight",
+            crop_id=paddy.id,
+            symptoms="Oval or irregular greenish-grey lesions on leaf sheaths near water level. "
+                     "Lesions enlarge and coalesce causing blighted appearance. "
+                     "White fungal mycelium visible on lesions in humid conditions.",
+            cause="Fungus Rhizoctonia solani; favored by dense planting, high nitrogen, and warm humid weather.",
+            prevention="Avoid dense planting — maintain 20×15cm spacing. "
+                       "Use balanced NPK fertilization. Remove weed hosts. Drain fields periodically.",
+            organic_treatment="Apply Trichoderma harzianum (2.5 kg/ha) to soil. "
+                              "Spray Pseudomonas fluorescens (10g/L). Use neem cake at 150 kg/ha.",
+            chemical_treatment="Spray Validamycin 3% SL (2.5ml/L) or Hexaconazole 5% EC (2ml/L). "
+                               "Apply Propiconazole 25% EC (1ml/L) at tillering stage.",
+            chemical_composition="Validamycin (C₂₀H₃₅NO₁₃): Antibiotic targeting trehalase enzyme. "
+                                 "Hexaconazole (C₁₄H₁₇Cl₂N₃O): Triazole systemic fungicide.",
+            severity="Medium",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/RiceSheathArk.jpg/400px-RiceSheathArk.jpg"
+        ),
+        Disease(
+            name="Brown Spot",
+            crop_id=paddy.id,
+            symptoms="Oval brown spots with grey center on leaves, glumes, and leaf sheaths. "
+                     "Spots may coalesce causing large blighted areas. Seeds become discolored.",
+            cause="Fungus Bipolaris oryzae (Helminthosporium oryzae); associated with nutrient-deficient soils, "
+                  "particularly potassium and silicon deficiency.",
+            prevention="Apply balanced fertilization, especially potassium (60 kg K₂O/ha). "
+                       "Treat seeds with fungicide before sowing. Use resistant varieties.",
+            organic_treatment="Seed treatment with Trichoderma viride (4g/kg). "
+                              "Foliar spray of Pseudomonas fluorescens (10g/L). Apply potassium-rich organic manures.",
+            chemical_treatment="Spray Mancozeb 75% WP (2.5g/L) or Zineb 75% WP (2.5g/L). "
+                               "Seed treatment with Carbendazim 50% WP (2g/kg).",
+            chemical_composition="Mancozeb (C₄H₆MnN₂S₄·Zn): Dithiocarbamate contact fungicide. "
+                                 "Zineb (C₄H₆N₂S₄Zn): Multi-site contact fungicide.",
+            severity="Medium",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Cochliobolus_miyabeanus.jpg/400px-Cochliobolus_miyabeanus.jpg"
+        ),
+        Disease(
+            name="Tungro Virus Disease",
+            crop_id=paddy.id,
+            symptoms="Yellow to orange discoloration of leaves from tip downward. "
+                     "Stunted plant growth with reduced tillering. Delayed flowering and incomplete panicle emergence.",
+            cause="Caused by Rice tungro bacilliform virus (RTBV) and Rice tungro spherical virus (RTSV); "
+                  "transmitted by green leafhopper (Nephotettix virescens).",
+            prevention="Use resistant varieties (e.g., IR-36, Vikramarya). "
+                       "Synchronize planting dates in the community. Control leafhopper vectors early.",
+            organic_treatment="Install yellow sticky traps (25/ha) to monitor leafhoppers. "
+                              "Spray neem seed kernel extract (NSKE 5%). Remove and destroy infected plants.",
+            chemical_treatment="Control leafhopper vector: spray Imidacloprid 17.8% SL (0.5ml/L) or "
+                               "Thiamethoxam 25% WG (0.3g/L). No direct chemical cure for the virus.",
+            chemical_composition="Imidacloprid (C₉H₁₀ClN₅O₂): Neonicotinoid systemic insecticide. "
+                                 "Thiamethoxam (C₈H₁₀ClN₅O₃S): Second-generation neonicotinoid.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Green_leafhopper_%28Nephotettix_virescens%29_UGA5190052.jpg/400px-Green_leafhopper_%28Nephotettix_virescens%29_UGA5190052.jpg"
+        )
+    ]
+
+    paddy_pests = [
+        Pest(
+            name="Brown Plant Hopper (BPH)",
+            crop_id=paddy.id,
+            scientific_name="Nilaparvata lugens",
+            symptoms="'Hopper burn' — circular patches of drying and browning in the field. "
+                     "Plants turn yellow, then brown, and wilt. Honeydew deposits lead to sooty mold.",
+            damage_type="Sap-sucking; causes wilting, drying, and complete crop loss in severe cases.",
+            prevention="Use BPH-resistant varieties. Avoid excessive nitrogen. "
+                       "Allow natural enemies (spiders, wasps). Drain fields intermittently.",
+            organic_treatment="Release Lycosa pseudoannulata (wolf spider) at 500/ha. "
+                              "Spray neem oil (5ml/L). Use light traps to monitor population.",
+            chemical_treatment="Spray Pymetrozine 50% WG (0.6g/L) or Dinotefuran 20% SG (0.5g/L). "
+                               "Avoid using synthetic pyrethroids as they cause BPH resurgence.",
+            chemical_composition="Pymetrozine (C₁₀H₁₁N₅O): Selective feeding blocker for Hemiptera.",
+            severity="High",
+            active_season="August–October (Kharif); also during Rabi/Boro crop",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Nilaparvata_lugens_439632934.jpg/400px-Nilaparvata_lugens_439632934.jpg"
+        ),
+        Pest(
+            name="Stem Borer",
+            crop_id=paddy.id,
+            scientific_name="Scirpophaga incertulas (Yellow Stem Borer)",
+            symptoms="'Dead hearts' in vegetative stage — central shoot dries. "
+                     "'White ears' in reproductive stage — panicles emerge white and empty.",
+            damage_type="Internal feeder — larvae bore into stems and feed on inner tissues.",
+            prevention="Use light traps (1/ha) to monitor moths. Clip and destroy egg masses. "
+                       "Harvest at ground level and destroy stubbles. Use early-maturing varieties.",
+            organic_treatment="Release Trichogramma japonicum (egg parasitoid) at 1 lakh/ha, 6 times at weekly intervals. "
+                              "Apply neem cake at 150 kg/ha in standing water.",
+            chemical_treatment="Apply Cartap hydrochloride 4G (25 kg/ha) in paddy water. "
+                               "Spray Chlorantraniliprole 18.5% SC (0.3ml/L) at egg-laying stage.",
+            chemical_composition="Cartap hydrochloride (C₇H₁₅NO₂S₂·HCl): Nereistoxin analogue insecticide. "
+                                 "Chlorantraniliprole (C₁₈H₁₄BrCl₂N₅O₂): Ryanodine receptor activator.",
+            severity="High",
+            active_season="July–November",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Scirpophaga_incertulas_female_moth.png/400px-Scirpophaga_incertulas_female_moth.png"
+        )
+    ]
+
+    # ==================== CHILLI ====================
+    chilli = Crop(
+        name="Chilli",
+        scientific_name="Capsicum annuum",
+        description="Chilli is an important spice crop grown extensively in India. "
+                    "It is used as a spice, condiment, sauce, and vegetable. "
+                    "India is the world's largest producer, consumer, and exporter of chilli. "
+                    "Andhra Pradesh, Telangana, Karnataka, and Maharashtra are major producing states.",
+        season="Kharif & Rabi (Year-round in tropical areas)",
+        image_url="https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400"
+    )
+    db.session.add(chilli)
+    db.session.flush()
+
+    chilli_diseases = [
+        Disease(
+            name="Anthracnose (Fruit Rot)",
+            crop_id=chilli.id,
+            symptoms="Dark, sunken, circular lesions on ripe fruits with concentric rings. "
+                     "Lesions may show salmon-colored spore masses. Fruits shrivel and drop prematurely.",
+            cause="Fungus Colletotrichum capsici; spreads through infected seeds, rain splash, and wind.",
+            prevention="Use disease-free certified seeds. Practice crop rotation (3-year cycle). "
+                       "Avoid overhead irrigation. Remove and destroy infected fruits promptly.",
+            organic_treatment="Seed treatment with Trichoderma viride (4g/kg). "
+                              "Spray Pseudomonas fluorescens (10g/L) at flowering stage. "
+                              "Apply neem oil (5ml/L) fortnightly.",
+            chemical_treatment="Spray Mancozeb 75% WP (2.5g/L) + Carbendazim 50% WP (1g/L) alternately at 15-day intervals. "
+                               "Seed treatment with Thiram 75% WP (3g/kg).",
+            chemical_composition="Mancozeb (C₄H₆MnN₂S₄·Zn): Multi-site dithiocarbamate fungicide. "
+                                 "Carbendazim (C₉H₉N₃O₂): Systemic benzimidazole fungicide.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Chilli_anthracnose_fruit_lesions.jpg/400px-Chilli_anthracnose_fruit_lesions.jpg"
+        ),
+        Disease(
+            name="Powdery Mildew",
+            crop_id=chilli.id,
+            symptoms="White powdery fungal growth on upper and lower leaf surfaces. "
+                     "Affected leaves curl upward, become chlorotic, and defoliate. Reduced fruit set.",
+            cause="Fungus Leveillula taurica; favored by dry weather with moderate temperatures (20-25°C).",
+            prevention="Maintain proper plant spacing for good air circulation. "
+                       "Avoid water stress. Remove and destroy infected plant parts.",
+            organic_treatment="Spray wettable sulphur (3g/L). Apply milk spray (10% fresh milk in water). "
+                              "Dust with fine sulphur powder (25 kg/ha).",
+            chemical_treatment="Spray Dinocap 48% EC (1ml/L) or Hexaconazole 5% EC (2ml/L). "
+                               "Alternate with Azoxystrobin 23% SC (1ml/L) to prevent resistance.",
+            chemical_composition="Dinocap (C₁₈H₂₄N₂O₆): Contact fungicide and acaricide. "
+                                 "Azoxystrobin (C₂₂H₁₇N₃O₅): Strobilurin systemic fungicide.",
+            severity="Medium",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Golovinomyces_sordidus_on_Broadleaf_Plantain_-_Plantago_major_%2844171864324%29.jpg/400px-Golovinomyces_sordidus_on_Broadleaf_Plantain_-_Plantago_major_%2844171864324%29.jpg"
+        ),
+        Disease(
+            name="Bacterial Wilt",
+            crop_id=chilli.id,
+            symptoms="Sudden wilting of whole plant without yellowing. "
+                     "Cut stem placed in water shows milky white bacterial ooze streaming out. "
+                     "Brown discoloration of vascular tissue.",
+            cause="Bacterium Ralstonia solanacearum; soil-borne, spreads through irrigation water and infected transplants.",
+            prevention="Use resistant varieties. Practice crop rotation with non-solanaceous crops (cereals/pulses). "
+                       "Raise nursery in disease-free soil. Improve drainage.",
+            organic_treatment="Drench soil with Pseudomonas fluorescens (20g/L). "
+                              "Apply Trichoderma harzianum at 2.5 kg/ha mixed with FYM. "
+                              "Use bio-fumigation with mustard cake.",
+            chemical_treatment="No effective chemical cure once plants are infected. "
+                               "Preventive soil drenching with Copper oxychloride 50% WP (3g/L) + Streptocycline (0.5g/10L).",
+            chemical_composition="Copper oxychloride (3Cu(OH)₂·CuCl₂): Contact copper fungicide/bactericide. "
+                                 "Streptocycline: Streptomycin + Tetracycline antibiotic combination.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Ralstonia_solanacearum_symptoms.jpg/400px-Ralstonia_solanacearum_symptoms.jpg"
+        ),
+        Disease(
+            name="Leaf Curl Virus",
+            crop_id=chilli.id,
+            symptoms="Upward curling and crinkling of leaves. Leaves become thick and leathery. "
+                     "Stunted growth with short internodes giving bushy appearance. Severe yield loss.",
+            cause="Chilli leaf curl virus (ChiLCV) transmitted by whitefly (Bemisia tabaci).",
+            prevention="Use virus-resistant varieties. Install yellow sticky traps (25/ha) to monitor whitefly. "
+                       "Remove and destroy infected plants. Use reflective silver mulch.",
+            organic_treatment="Spray neem oil (5ml/L) or NSKE 5% to control whitefly. "
+                              "Release Encarsia formosa (whitefly parasitoid). "
+                              "Grow trap crops (marigold) along borders.",
+            chemical_treatment="Spray Imidacloprid 17.8% SL (0.3ml/L) or Diafenthiuron 50% WP (1.2g/L) to control whitefly vector. "
+                               "Seed treatment with Thiamethoxam 70% WS (5g/kg).",
+            chemical_composition="Imidacloprid (C₉H₁₀ClN₅O₂): Neonicotinoid systemic insecticide. "
+                                 "Diafenthiuron (C₂₃H₃₂N₂OS): Thiourea insecticide/acaricide.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Taphrina_deformans_1.jpg/400px-Taphrina_deformans_1.jpg"
+        )
+    ]
+
+    chilli_pests = [
+        Pest(
+            name="Thrips",
+            crop_id=chilli.id,
+            scientific_name="Scirtothrips dorsalis",
+            symptoms="Upward curling of leaves with silvery sheen on undersurface. "
+                     "Leaves become brittle. Flower buds drop. 'Murda' complex (leaf curl) in severe infestation.",
+            damage_type="Rasping-sucking; causes leaf curl, flower drop, and reduced fruit quality.",
+            prevention="Use blue sticky traps (25/ha). Intercrop with coriander or maize. "
+                       "Spray water jets to dislodge nymphs. Avoid water stress.",
+            organic_treatment="Spray neem oil (5ml/L) or NSKE 5% at 10-day intervals. "
+                              "Release predatory mites (Amblyseius swirskii). Apply Beauveria bassiana (5g/L).",
+            chemical_treatment="Spray Fipronil 5% SC (2ml/L) or Spinetoram 11.7% SC (0.5ml/L). "
+                               "Alternate with Acephate 75% SP (1g/L).",
+            chemical_composition="Fipronil (C₁₂H₄Cl₂F₆N₄OS): Phenylpyrazole insecticide. "
+                                 "Spinetoram: Spinosyn insecticide derived from Saccharopolyspora.",
+            severity="High",
+            active_season="March–June (hot dry weather)",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Thysanoptera.jpg/400px-Thysanoptera.jpg"
+        ),
+        Pest(
+            name="Fruit Borer",
+            crop_id=chilli.id,
+            scientific_name="Helicoverpa armigera",
+            symptoms="Circular bore holes on fruits. Larvae feed inside the fruit. "
+                     "Damaged fruits show frass at entry point and may rot. Premature fruit drop.",
+            damage_type="Internal feeder — larvae bore into fruits and feed on seeds and placenta.",
+            prevention="Install pheromone traps (12/ha) to monitor moths. Hand-pick and destroy infested fruits. "
+                       "Grow marigold as trap crop (1 row per 16 rows of chilli).",
+            organic_treatment="Release Trichogramma chilonis at 1.5 lakh/ha at flowering. "
+                              "Spray HaNPV (Helicoverpa Nuclear Polyhedrosis Virus) at 250 LE/ha. "
+                              "Apply Bt (Bacillus thuringiensis) at 2g/L.",
+            chemical_treatment="Spray Chlorantraniliprole 18.5% SC (0.3ml/L) or Emamectin benzoate 5% SG (0.4g/L). "
+                               "Apply at 50% flowering stage.",
+            chemical_composition="Emamectin benzoate (C₄₉H₇₅NO₁₃·C₇H₆O₃): Avermectin insecticide activating GABA-gated chloride channels.",
+            severity="High",
+            active_season="October–February (during fruiting)",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Helicoverpa_armigera.jpg/400px-Helicoverpa_armigera.jpg"
+        ),
+        Pest(
+            name="Whitefly",
+            crop_id=chilli.id,
+            scientific_name="Bemisia tabaci",
+            symptoms="Tiny white winged insects on leaf undersurface. Yellowing and downward curling of leaves. "
+                     "Honeydew secretion leading to sooty mold. Transmits leaf curl virus.",
+            damage_type="Sap-sucking and virus vector — causes direct damage and transmits several viral diseases.",
+            prevention="Use yellow sticky traps. Grow barrier crops (sorghum/maize 2-3 rows). "
+                       "Use reflective silver-colored mulches. Avoid growing near cotton fields.",
+            organic_treatment="Spray neem oil (5ml/L) at weekly intervals. "
+                              "Release Chrysoperla carnea predators at 1 per plant. "
+                              "Spray garlic-chilli extract (200g each in 10L water).",
+            chemical_treatment="Spray Spiromesifen 22.9% SC (0.8ml/L) or Pyriproxyfen 10% EC (1.5ml/L). "
+                               "Rotate insecticide groups to prevent resistance development.",
+            chemical_composition="Spiromesifen (C₂₃H₃₀O₄): Lipid biosynthesis inhibitor. "
+                                 "Pyriproxyfen (C₂₀H₁₉NO₃): Juvenile hormone analog (IGR).",
+            severity="High",
+            active_season="Year-round, peaks in February–May",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Silverleaf_whitefly.jpg/400px-Silverleaf_whitefly.jpg"
+        )
+    ]
+
+    # ==================== COFFEE ====================
+    coffee = Crop(
+        name="Coffee",
+        scientific_name="Coffea arabica / Coffea canephora",
+        description="Coffee is a major plantation crop grown in southern India (Karnataka, Kerala, Tamil Nadu). "
+                    "India produces both Arabica (grown at 1000–1500m) and Robusta (grown at 500–1000m) varieties. "
+                    "Karnataka alone contributes about 70% of India's coffee production. "
+                    "It requires shade, well-drained acidic soil (pH 5.5–6.5), and tropical highland climate.",
+        season="Perennial; flowering March–April, harvest November–February",
+        image_url="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400"
+    )
+    db.session.add(coffee)
+    db.session.flush()
+
+    coffee_diseases = [
+        Disease(
+            name="Coffee Leaf Rust",
+            crop_id=coffee.id,
+            symptoms="Yellow to orange powdery spots (urediniospores) on the underside of leaves. "
+                     "Upper surface shows pale yellow patches. Severe defoliation and die-back of branches.",
+            cause="Fungus Hemileia vastatrix; spreads through wind-borne spores, rain splash. "
+                  "Favored by warm (20-25°C), humid conditions with intermittent rain.",
+            prevention="Grow resistant varieties (e.g., Sln.6, Sln.9, Chandragiri). "
+                       "Maintain proper shade (40-50%). Ensure good air circulation by pruning. "
+                       "Remove heavily infected branches.",
+            organic_treatment="Spray Bordeaux mixture (1%) as a preventive during pre-monsoon. "
+                              "Apply Trichoderma viride (10g/L) to soil. Use compost tea sprays fortnightly.",
+            chemical_treatment="Spray Tridemorph 80% EC (0.5ml/L) or Propiconazole 25% EC (0.5ml/L) at onset of monsoon. "
+                               "Two rounds of spraying: pre-monsoon (June) and post-monsoon (September).",
+            chemical_composition="Tridemorph (C₁₉H₃₉NO): Morpholine systemic fungicide. "
+                                 "Propiconazole (C₁₅H₁₇Cl₂N₃O₂): Triazole systemic fungicide inhibiting ergosterol biosynthesis.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Hemileia_vastatrix_on_coffee_leaf.jpg/400px-Hemileia_vastatrix_on_coffee_leaf.jpg"
+        ),
+        Disease(
+            name="Black Rot",
+            crop_id=coffee.id,
+            symptoms="Black circular spots on mature leaves, usually near the margin. "
+                     "Infected berries turn black and mummify on the branch. "
+                     "Twigs show dark lesions and die-back.",
+            cause="Fungus Koleroga noxia (Pellicularia koleroga); occurs in heavy rainfall areas "
+                  "with poor drainage and excessive shade.",
+            prevention="Regulate shade to 40-50%. Improve drainage. "
+                       "Prune lower branches to allow air circulation. "
+                       "Remove and burn infected berries and branches.",
+            organic_treatment="Spray Bordeaux mixture (1%) before onset of southwest monsoon. "
+                              "Apply copper-based formulations (Bordeaux paste) on affected stems.",
+            chemical_treatment="Spray Copper oxychloride 50% WP (3g/L) or Bordeaux mixture (1%) at 30-day intervals "
+                               "during June–September. Apply 2-3 rounds during monsoon.",
+            chemical_composition="Copper oxychloride (3Cu(OH)₂·CuCl₂): Multi-site copper fungicide. "
+                                 "Bordeaux mixture: CuSO₄ + Ca(OH)₂ — protective copper fungicide.",
+            severity="Medium",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sclerotium_rolfsii_on_coffee.jpg/400px-Sclerotium_rolfsii_on_coffee.jpg"
+        ),
+        Disease(
+            name="Root Disease (Fusarium Wilt)",
+            crop_id=coffee.id,
+            symptoms="Gradual yellowing and wilting of leaves. Leaves drop off, starting from lower branches. "
+                     "Brown discoloration of root and stem vascular tissue. Slow decline and death of plant.",
+            cause="Fungus Fusarium oxysporum; soil-borne, enters through root wounds. "
+                  "Favored by poor drainage, compacted soil, and nematode damage.",
+            prevention="Use healthy nursery stock. Improve soil drainage. "
+                       "Avoid mechanical damage to roots during weeding. "
+                       "Apply Trichoderma-enriched FYM during planting.",
+            organic_treatment="Apply Trichoderma harzianum (50g/plant) mixed with well-decomposed FYM. "
+                              "Drench soil with Pseudomonas fluorescens (20g/L). Mulch with organic matter.",
+            chemical_treatment="Drench soil around stems with Carbendazim 50% WP (1g/L) + Copper oxychloride 50% WP (3g/L). "
+                               "Repeat at 45-day intervals. No complete chemical cure.",
+            chemical_composition="Carbendazim (C₉H₉N₃O₂): Systemic benzimidazole fungicide absorbed via roots.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Fusarium_oxysporum_symptoms.jpg/400px-Fusarium_oxysporum_symptoms.jpg"
+        ),
+        Disease(
+            name="Coffee Berry Disease (CBD)",
+            crop_id=coffee.id,
+            symptoms="Dark, sunken lesions on green developing berries. "
+                     "Berries become black, shriveled, and mummified. "
+                     "Affects beans inside — results in defective 'black beans'. Premature berry drop.",
+            cause="Fungus Colletotrichum kahawae; spreads by rain splash. "
+                  "Attacks expanding berries during monsoon. Most damaging in Arabica.",
+            prevention="Grow resistant varieties (e.g., Sln.6, Catimor). "
+                       "Avoid over-shading. Maintain open canopy by pruning. "
+                       "Timely harvesting of ripe berries.",
+            organic_treatment="Spray Bordeaux mixture (0.5%) at pea-berry stage. "
+                              "Apply Trichoderma (10g/L) at the onset of berry development. "
+                              "Remove and destroy infected berries from the plant and ground.",
+            chemical_treatment="Spray Chlorothalonil 75% WP (2g/L) or Carbendazim 50% WP (1g/L) at berry expansion stage. "
+                               "Apply 3 rounds at 21-day intervals from June.",
+            chemical_composition="Chlorothalonil (C₈Cl₄N₂): Broad-spectrum chloronitrile contact fungicide.",
+            severity="High",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coffee_berry_disease_symptoms.jpg/400px-Coffee_berry_disease_symptoms.jpg"
+        )
+    ]
+
+    coffee_pests = [
+        Pest(
+            name="White Stem Borer",
+            crop_id=coffee.id,
+            scientific_name="Xylotrechus quadripes",
+            symptoms="Ridges and galleries under bark with frass. "
+                     "Bark peeling reveals larval tunnels. Branches wilt and dry up. "
+                     "Exit holes on main stem from adult emergence.",
+            damage_type="Internal feeder — larvae bore into stems, disrupting water and nutrient transport.",
+            prevention="Maintain thick overhead shade. Apply Bordeaux paste on stems up to 3 feet height. "
+                       "Trace and destroy grubs in stems. Remove and burn severely infested plants.",
+            organic_treatment="Apply lime wash + Bordeaux paste on main stem and primary branches. "
+                              "Pad stems with Chlorpyriphos-soaked sponge at bore holes. "
+                              "Use entomopathogenic fungi (Beauveria bassiana).",
+            chemical_treatment="Swab main stem with Chlorpyriphos 20% EC (5ml/L) twice a year (April & October). "
+                               "Inject Dichlorvos (DDVP) into bore holes using syringe and seal with mud.",
+            chemical_composition="Chlorpyriphos (C₉H₁₁Cl₃NO₃PS): Organophosphate insecticide inhibiting acetylcholinesterase.",
+            severity="High",
+            active_season="March–May (adult emergence), Year-round (larval damage)",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Xylotrechus_damage_on_tree.jpg/400px-Xylotrechus_damage_on_tree.jpg"
+        ),
+        Pest(
+            name="Coffee Berry Borer",
+            crop_id=coffee.id,
+            scientific_name="Hypothenemus hampei",
+            symptoms="Tiny circular bore holes (≈1mm) at the tip of berries. "
+                     "Larvae feed on beans inside the berry. Damaged beans show tunnels and frass. "
+                     "Infested berries may drop early.",
+            damage_type="Internal feeder — adult female bores into berries, lays eggs; larvae feed on beans.",
+            prevention="Timely and clean harvesting — no berries left on plant or ground. "
+                       "Maintain shade at 40-50%. Community-level synchronized control.",
+            organic_treatment="Use Beauveria bassiana (5×10⁸ CFU/g at 5g/L) spray on berries. "
+                              "Install Brocap traps with methanol-ethanol bait. "
+                              "Release Cephalonomia stephanoderis (bethylid parasitoid).",
+            chemical_treatment="Spray Chlorpyriphos 20% EC (3ml/L) on berries. "
+                               "Endosulfan-based treatments are now banned. Use only approved insecticides.",
+            chemical_composition="Beauveria bassiana: Entomopathogenic fungus causing muscardine disease in beetles.",
+            severity="High",
+            active_season="April–August (during berry development)",
+            image_url="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Coffee_berry_borer_damage.jpg/400px-Coffee_berry_borer_damage.jpg"
+        )
+    ]
+
+    # Add all diseases and pests
+    for disease in paddy_diseases + chilli_diseases + coffee_diseases:
+        db.session.add(disease)
+
+    for pest in paddy_pests + chilli_pests + coffee_pests:
+        db.session.add(pest)
+
+    db.session.commit()
+    print("Database seeded with 3 crops, 13 diseases, and 7 pests.")

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - CropGuard</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span data-i18n="app_title">CropGuard Advisory</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link"><i class="fas fa-home"></i> <span data-i18n="home">Home</span></a></li>
+                <li><a href="/search" class="nav-link active"><i class="fas fa-search"></i> <span data-i18n="search">Search</span></a></li>
+                <li><a href="/detect" class="nav-link"><i class="fas fa-camera"></i> <span data-i18n="detect_disease">Detect Disease</span></a></li>
+                <li class="nav-lang">
+                    <select id="langSelector" class="lang-select" aria-label="Select language">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="kn">ಕನ್ನಡ</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Search Section -->
+    <section class="section search-section">
+        <div class="container">
+            <h1 class="section-title"><i class="fas fa-search"></i> <span data-i18n="search_crops_diseases">Search Crops, Diseases & Pests</span></h1>
+            <div class="search-bar">
+                <input type="text" id="searchInput" data-i18n-placeholder="search_input_placeholder" placeholder="Type crop name, disease, symptom, pest..." aria-label="Search">
+                <button onclick="performSearch()" aria-label="Search"><i class="fas fa-search"></i> <span data-i18n="search">Search</span></button>
+            </div>
+
+            <div class="search-suggestions">
+                <span data-i18n="try_search">Try:</span>
+                <button class="suggestion-chip" onclick="searchFor('yellowing leaves')">yellowing leaves</button>
+                <button class="suggestion-chip" onclick="searchFor('blast')">blast</button>
+                <button class="suggestion-chip" onclick="searchFor('rust')">rust</button>
+                <button class="suggestion-chip" onclick="searchFor('borer')">borer</button>
+                <button class="suggestion-chip" onclick="searchFor('wilt')">wilt</button>
+                <button class="suggestion-chip" onclick="searchFor('paddy')">paddy</button>
+                <button class="suggestion-chip" onclick="searchFor('mildew')">mildew</button>
+            </div>
+
+            <!-- Results -->
+            <div id="searchResults" class="search-results" style="display: none;">
+                <!-- Crops Results -->
+                <div id="cropResults" class="result-section" style="display: none;">
+                    <h2><i class="fas fa-seedling"></i> <span data-i18n="crops">Crops</span></h2>
+                    <div id="cropResultsList" class="results-grid"></div>
+                </div>
+
+                <!-- Disease Results -->
+                <div id="diseaseResults" class="result-section" style="display: none;">
+                    <h2><i class="fas fa-virus"></i> <span data-i18n="diseases">Diseases</span></h2>
+                    <div id="diseaseResultsList" class="results-list"></div>
+                </div>
+
+                <!-- Pest Results -->
+                <div id="pestResults" class="result-section" style="display: none;">
+                    <h2><i class="fas fa-bug"></i> <span data-i18n="pests">Pests</span></h2>
+                    <div id="pestResultsList" class="results-list"></div>
+                </div>
+
+                <!-- No Results -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3 data-i18n="no_results_msg">No results found</h3>
+                    <p data-i18n="no_results_desc">Try different keywords or check your spelling.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p data-i18n="copyright">&copy; 2026 Crop Disease & Pest Advisory System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/app.js"></script>
+    <script>
+        let searchTimeout;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get('q');
+            if (q) {
+                document.getElementById('searchInput').value = q;
+                performSearch();
+            }
+
+            document.getElementById('searchInput').addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 400);
+            });
+
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') performSearch();
+            });
+        });
+
+        function searchFor(term) {
+            document.getElementById('searchInput').value = term;
+            performSearch();
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&lang=${currentLang}`);
+                const data = await response.json();
+
+                resultsDiv.style.display = 'block';
+
+                const hasCrops = data.crops && data.crops.length > 0;
+                const hasDiseases = data.diseases && data.diseases.length > 0;
+                const hasPests = data.pests && data.pests.length > 0;
+
+                // Crops
+                const cropSection = document.getElementById('cropResults');
+                const cropList = document.getElementById('cropResultsList');
+                if (hasCrops) {
+                    cropSection.style.display = 'block';
+                    cropList.innerHTML = data.crops.map(c => `
+                        <a href="/crop/${c.id}" class="result-card crop-result">
+                            <h3><i class="fas fa-seedling"></i> ${escapeHtml(c.name)}</h3>
+                            <p>${escapeHtml(c.scientific_name || '')} | ${escapeHtml(c.season || '')}</p>
+                            <div class="result-meta">
+                                <span>${c.disease_count} ${t('n_diseases', 'Diseases')}</span>
+                                <span>${c.pest_count} ${t('n_pests', 'Pests')}</span>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    cropSection.style.display = 'none';
+                }
+
+                // Diseases
+                const diseaseSection = document.getElementById('diseaseResults');
+                const diseaseList = document.getElementById('diseaseResultsList');
+                if (hasDiseases) {
+                    diseaseSection.style.display = 'block';
+                    diseaseList.innerHTML = data.diseases.map(d => `
+                        <div class="result-card disease-result">
+                            <div class="result-header">
+                                <h3><i class="fas fa-virus"></i> ${escapeHtml(d.name)}</h3>
+                                <span class="severity-badge severity-${(d.severity || 'medium').toLowerCase()}">${escapeHtml(d.severity || '')}</span>
+                            </div>
+                            <p class="result-crop"><i class="fas fa-seedling"></i> ${t('crop_label', 'Crop:')} ${escapeHtml(d.crop_name || '')}</p>
+                            <p class="result-symptoms"><strong>${t('symptoms', 'Symptoms')}:</strong> ${escapeHtml(d.symptoms).substring(0, 150)}...</p>
+                            <details class="result-details">
+                                <summary>${t('view_details', 'View full details')}</summary>
+                                <div class="detail-content">
+                                    <p><strong>${t('cause', 'Cause')}:</strong> ${escapeHtml(d.cause || 'N/A')}</p>
+                                    <p><strong>${t('prevention', 'Prevention')}:</strong> ${escapeHtml(d.prevention || 'N/A')}</p>
+                                    <p><strong>${t('organic_treatment', 'Organic Treatment')}:</strong> ${escapeHtml(d.organic_treatment || 'N/A')}</p>
+                                    <p><strong>${t('chemical_treatment', 'Chemical Treatment')}:</strong> ${escapeHtml(d.chemical_treatment || 'N/A')}</p>
+                                    <p><strong>${t('chemical_composition', 'Chemical Composition')}:</strong> ${escapeHtml(d.chemical_composition || 'N/A')}</p>
+                                </div>
+                            </details>
+                        </div>
+                    `).join('');
+                } else {
+                    diseaseSection.style.display = 'none';
+                }
+
+                // Pests
+                const pestSection = document.getElementById('pestResults');
+                const pestList = document.getElementById('pestResultsList');
+                if (hasPests) {
+                    pestSection.style.display = 'block';
+                    pestList.innerHTML = data.pests.map(p => `
+                        <div class="result-card pest-result">
+                            <div class="result-header">
+                                <h3><i class="fas fa-bug"></i> ${escapeHtml(p.name)}</h3>
+                                <span class="severity-badge severity-${(p.severity || 'medium').toLowerCase()}">${escapeHtml(p.severity || '')}</span>
+                            </div>
+                            <p class="result-crop"><i class="fas fa-seedling"></i> ${t('crop_label', 'Crop:')} ${escapeHtml(p.crop_name || '')}</p>
+                            <p class="result-symptoms"><strong>${t('symptoms', 'Symptoms')}:</strong> ${escapeHtml(p.symptoms).substring(0, 150)}...</p>
+                            <details class="result-details">
+                                <summary>${t('view_details', 'View full details')}</summary>
+                                <div class="detail-content">
+                                    <p><strong>${t('scientific_name', 'Scientific Name')}:</strong> ${escapeHtml(p.scientific_name || 'N/A')}</p>
+                                    <p><strong>${t('damage_type', 'Damage Type')}:</strong> ${escapeHtml(p.damage_type || 'N/A')}</p>
+                                    <p><strong>${t('active_season', 'Active Season')}:</strong> ${escapeHtml(p.active_season || 'N/A')}</p>
+                                    <p><strong>${t('prevention', 'Prevention')}:</strong> ${escapeHtml(p.prevention || 'N/A')}</p>
+                                    <p><strong>${t('organic_treatment', 'Organic Treatment')}:</strong> ${escapeHtml(p.organic_treatment || 'N/A')}</p>
+                                    <p><strong>${t('chemical_treatment', 'Chemical Treatment')}:</strong> ${escapeHtml(p.chemical_treatment || 'N/A')}</p>
+                                </div>
+                            </details>
+                        </div>
+                    `).join('');
+                } else {
+                    pestSection.style.display = 'none';
+                }
+
+                // No results
+                document.getElementById('noResults').style.display =
+                    (!hasCrops && !hasDiseases && !hasPests) ? 'flex' : 'none';
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="error-msg">${t('search_failed', 'Search failed. Please try again.')}</p>`;
+                resultsDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

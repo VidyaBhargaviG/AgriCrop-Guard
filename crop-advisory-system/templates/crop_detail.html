@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Details - CropGuard</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span data-i18n="app_title">CropGuard Advisory</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link"><i class="fas fa-home"></i> <span data-i18n="home">Home</span></a></li>
+                <li><a href="/search" class="nav-link"><i class="fas fa-search"></i> <span data-i18n="search">Search</span></a></li>
+                <li><a href="/detect" class="nav-link"><i class="fas fa-camera"></i> <span data-i18n="detect_disease">Detect Disease</span></a></li>
+                <li class="nav-lang">
+                    <select id="langSelector" class="lang-select" aria-label="Select language">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="kn">ಕನ್ನಡ</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="/" data-i18n="home">Home</a> <i class="fas fa-chevron-right"></i> <span id="breadcrumbCrop"></span>
+        </div>
+    </div>
+
+    <!-- Crop Header -->
+    <section class="crop-header" id="cropHeader">
+        <div class="container">
+            <div class="loading" id="headerLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p data-i18n="loading_details">Loading crop details...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Diseases Section -->
+    <section class="section" id="diseasesSection">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-virus"></i>
+                <span data-i18n="common_diseases">Common Diseases</span>
+            </h2>
+            <div class="diseases-list" id="diseasesList">
+            </div>
+        </div>
+    </section>
+
+    <!-- Pests Section -->
+    <section class="section section-alt" id="pestsSection">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-bug"></i>
+                <span data-i18n="common_pests">Common Pests</span>
+            </h2>
+            <div class="pests-list" id="pestsList">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p data-i18n="copyright">&copy; 2026 Crop Disease & Pest Advisory System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadCropDetails);
+
+        async function loadCropDetails() {
+            const cropId = window.location.pathname.split('/').pop();
+
+            try {
+                const response = await fetch(`/api/crops/${cropId}?lang=${currentLang}`);
+                if (!response.ok) throw new Error('Not found');
+                const crop = await response.json();
+
+                document.title = `${crop.name} - CropGuard`;
+                document.getElementById('breadcrumbCrop').textContent = crop.name;
+
+                // Render crop header
+                const header = document.getElementById('cropHeader');
+                header.innerHTML = `
+                    <div class="container">
+                        <div class="crop-detail-header">
+                            <div class="crop-detail-info">
+                                <h1>${escapeHtml(crop.name)}</h1>
+                                <p class="scientific-name"><i class="fas fa-dna"></i> ${escapeHtml(crop.scientific_name || '')}</p>
+                                <p class="crop-description">${escapeHtml(crop.description || '')}</p>
+                                <div class="crop-meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${t('season', 'Season')}: ${escapeHtml(crop.season || '')}</span>
+                                    <span><i class="fas fa-virus"></i> ${crop.diseases.length} ${t('n_diseases', 'Diseases')}</span>
+                                    <span><i class="fas fa-bug"></i> ${crop.pests.length} ${t('n_pests', 'Pests')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Render diseases
+                const diseasesList = document.getElementById('diseasesList');
+                if (crop.diseases.length === 0) {
+                    diseasesList.innerHTML = `<p class="no-data">${t('no_diseases_msg', 'No diseases recorded for this crop.')}</p>`;
+                } else {
+                    diseasesList.innerHTML = crop.diseases.map(disease => `
+                        <div class="disease-card">
+                            <div class="disease-card-header">
+                                <h3><i class="fas fa-virus"></i> ${escapeHtml(disease.name)}</h3>
+                                <span class="severity-badge severity-${(disease.severity || 'medium').toLowerCase()}">${escapeHtml(disease.severity || 'N/A')}</span>
+                            </div>
+                            ${disease.image_url ? `<div class="sample-image-section"><h4><i class="fas fa-image"></i> <span data-i18n="sample_image">Sample Image</span></h4><div class="sample-image-wrapper"><img src="${escapeHtml(disease.image_url)}" alt="${escapeHtml(disease.name)}" class="sample-image" loading="lazy" onerror="this.parentElement.parentElement.style.display='none'"><p class="image-caption">${escapeHtml(disease.name)}</p></div></div>` : ''}
+                            <div class="disease-card-body">
+                                <div class="info-section">
+                                    <h4><i class="fas fa-stethoscope"></i> <span data-i18n="symptoms">Symptoms</span></h4>
+                                    <p>${escapeHtml(disease.symptoms)}</p>
+                                </div>
+                                <div class="info-section">
+                                    <h4><i class="fas fa-microscope"></i> <span data-i18n="cause">Cause</span></h4>
+                                    <p>${escapeHtml(disease.cause || 'N/A')}</p>
+                                </div>
+                                <div class="info-section">
+                                    <h4><i class="fas fa-shield-alt"></i> <span data-i18n="prevention">Prevention</span></h4>
+                                    <p>${escapeHtml(disease.prevention || 'N/A')}</p>
+                                </div>
+                                <div class="treatments-grid">
+                                    <div class="treatment-card organic">
+                                        <h4><i class="fas fa-leaf"></i> <span data-i18n="organic_treatment">Organic Treatment</span></h4>
+                                        <p>${escapeHtml(disease.organic_treatment || 'N/A')}</p>
+                                    </div>
+                                    <div class="treatment-card chemical">
+                                        <h4><i class="fas fa-flask"></i> <span data-i18n="chemical_treatment">Chemical Treatment</span></h4>
+                                        <p>${escapeHtml(disease.chemical_treatment || 'N/A')}</p>
+                                    </div>
+                                </div>
+                                <div class="info-section chemical-comp">
+                                    <h4><i class="fas fa-atom"></i> <span data-i18n="chemical_composition">Chemical Composition</span></h4>
+                                    <p>${escapeHtml(disease.chemical_composition || 'N/A')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Render pests
+                const pestsList = document.getElementById('pestsList');
+                if (crop.pests.length === 0) {
+                    pestsList.innerHTML = `<p class="no-data">${t('no_pests_msg', 'No pests recorded for this crop.')}</p>`;
+                } else {
+                    pestsList.innerHTML = crop.pests.map(pest => `
+                        <div class="disease-card pest-card">
+                            <div class="disease-card-header">
+                                <h3><i class="fas fa-bug"></i> ${escapeHtml(pest.name)}</h3>
+                                <span class="severity-badge severity-${(pest.severity || 'medium').toLowerCase()}">${escapeHtml(pest.severity || 'N/A')}</span>
+                            </div>
+                            ${pest.image_url ? `<div class="sample-image-section"><h4><i class="fas fa-image"></i> <span data-i18n="sample_image">Sample Image</span></h4><div class="sample-image-wrapper"><img src="${escapeHtml(pest.image_url)}" alt="${escapeHtml(pest.name)}" class="sample-image" loading="lazy" onerror="this.parentElement.parentElement.style.display='none'"><p class="image-caption">${escapeHtml(pest.name)}</p></div></div>` : ''}
+                            <div class="disease-card-body">
+                                <p class="scientific-name"><i class="fas fa-dna"></i> ${escapeHtml(pest.scientific_name || '')}</p>
+                                <div class="info-section">
+                                    <h4><i class="fas fa-stethoscope"></i> <span data-i18n="symptoms">Symptoms</span></h4>
+                                    <p>${escapeHtml(pest.symptoms)}</p>
+                                </div>
+                                <div class="info-section">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> ${t('damage_type', 'Damage Type')}</h4>
+                                    <p>${escapeHtml(pest.damage_type || 'N/A')}</p>
+                                </div>
+                                <div class="info-section">
+                                    <h4><i class="fas fa-calendar"></i> ${t('active_season', 'Active Season')}</h4>
+                                    <p>${escapeHtml(pest.active_season || 'N/A')}</p>
+                                </div>
+                                <div class="info-section">
+                                    <h4><i class="fas fa-shield-alt"></i> <span data-i18n="prevention">Prevention</span></h4>
+                                    <p>${escapeHtml(pest.prevention || 'N/A')}</p>
+                                </div>
+                                <div class="treatments-grid">
+                                    <div class="treatment-card organic">
+                                        <h4><i class="fas fa-leaf"></i> <span data-i18n="organic_treatment">Organic Treatment</span></h4>
+                                        <p>${escapeHtml(pest.organic_treatment || 'N/A')}</p>
+                                    </div>
+                                    <div class="treatment-card chemical">
+                                        <h4><i class="fas fa-flask"></i> <span data-i18n="chemical_treatment">Chemical Treatment</span></h4>
+                                        <p>${escapeHtml(pest.chemical_treatment || 'N/A')}</p>
+                                    </div>
+                                </div>
+                                <div class="info-section chemical-comp">
+                                    <h4><i class="fas fa-atom"></i> <span data-i18n="chemical_composition">Chemical Composition</span></h4>
+                                    <p>${escapeHtml(pest.chemical_composition || 'N/A')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                document.getElementById('cropHeader').innerHTML = `
+                    <div class="container">
+                        <p class="error-msg"><i class="fas fa-exclamation-circle"></i> ${t('crop_not_found', 'Crop not found.')} <a href="/">${t('go_home', 'Go back to home')}</a></p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

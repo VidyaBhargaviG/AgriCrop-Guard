@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Disease & Pest Advisory System</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span data-i18n="app_title">CropGuard Advisory</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link active"><i class="fas fa-home"></i> <span data-i18n="home">Home</span></a></li>
+                <li><a href="/search" class="nav-link"><i class="fas fa-search"></i> <span data-i18n="search">Search</span></a></li>
+                <li><a href="/detect" class="nav-link"><i class="fas fa-camera"></i> <span data-i18n="detect">Detect Disease</span></a></li>
+                <li class="nav-lang">
+                    <select id="langSelector" class="lang-select" aria-label="Select language">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="kn">ಕನ್ನಡ</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 data-i18n="app_title">Crop Disease & Pest Advisory System</h1>
+            <p data-i18n="welcome_msg">Helping farmers identify and manage crop diseases effectively</p>
+            <div class="hero-search">
+                <input type="text" id="heroSearch" data-i18n-placeholder="search_placeholder" placeholder="Search by crop, disease, symptom..." aria-label="Search">
+                <button onclick="performHeroSearch()" aria-label="Search"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat"><i class="fas fa-seedling"></i> <span data-i18n="stat_crops">3 Crops</span></div>
+                <div class="stat"><i class="fas fa-virus"></i> <span data-i18n="stat_diseases">13 Diseases</span></div>
+                <div class="stat"><i class="fas fa-bug"></i> <span data-i18n="stat_pests">7 Pests</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Crops Section -->
+    <section class="section" id="crops">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-seedling"></i>
+                <span data-i18n="select_crop">Select a crop to view diseases and pests</span>
+            </h2>
+            <div class="crops-grid" id="cropsGrid">
+                <!-- Crops loaded dynamically -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p data-i18n="loading_crops">Loading crops...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-info-circle"></i> <span data-i18n="how_it_works">How It Works</span></h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-seedling"></i></div>
+                    <h3 data-i18n="step1_title">1. Select Crop</h3>
+                    <p data-i18n="step1_desc">Choose your crop from our database of Paddy, Chilli, and Coffee.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-search"></i></div>
+                    <h3 data-i18n="step2_title">2. Identify Problem</h3>
+                    <p data-i18n="step2_desc">Browse diseases and pests or search by symptoms you observe.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-prescription-bottle-medical"></i></div>
+                    <h3 data-i18n="step3_title">3. Get Treatment</h3>
+                    <p data-i18n="step3_desc">Get detailed organic and chemical treatment recommendations.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-camera"></i></div>
+                    <h3 data-i18n="step4_title">4. AI Detection</h3>
+                    <p data-i18n="step4_desc">Upload a photo for AI-powered disease identification.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3><i class="fas fa-leaf"></i> <span data-i18n="cropguard">CropGuard</span></h3>
+                    <p data-i18n="footer_desc">An AI-powered digital advisory system helping farmers protect crops, improve productivity, and reduce losses.</p>
+                </div>
+                <div class="footer-col">
+                    <h3 data-i18n="quick_links">Quick Links</h3>
+                    <ul>
+                        <li><a href="/" data-i18n="home">Home</a></li>
+                        <li><a href="/search" data-i18n="search">Search</a></li>
+                        <li><a href="/detect" data-i18n="detect">Disease Detection</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3 data-i18n="supported_crops">Supported Crops</h3>
+                    <ul>
+                        <li><a href="/crop/1" data-i18n="paddy_rice">Paddy (Rice)</a></li>
+                        <li><a href="/crop/2" data-i18n="chilli">Chilli</a></li>
+                        <li><a href="/crop/3" data-i18n="coffee">Coffee</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-i18n="copyright">&copy; 2026 Crop Disease & Pest Advisory System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadCrops);
+
+        async function loadCrops() {
+            try {
+                const response = await fetch(`/api/crops?lang=${currentLang}`);
+                const crops = await response.json();
+                const grid = document.getElementById('cropsGrid');
+
+                const cropIcons = {
+                    'Paddy (Rice)': 'fa-wheat-awn',
+                    'Chilli': 'fa-pepper-hot',
+                    'Coffee': 'fa-mug-hot'
+                };
+
+                const cropColors = {
+                    'Paddy (Rice)': '#4CAF50',
+                    'Chilli': '#F44336',
+                    'Coffee': '#795548'
+                };
+
+                // Map DB crop names to translation keys
+                const cropTransKeys = {
+                    'Paddy (Rice)': { name: 'crop_name_paddy', desc: 'crop_desc_paddy', season: 'crop_season_paddy' },
+                    'Chilli': { name: 'crop_name_chilli', desc: 'crop_desc_chilli', season: 'crop_season_chilli' },
+                    'Coffee': { name: 'crop_name_coffee', desc: 'crop_desc_coffee', season: 'crop_season_coffee' }
+                };
+
+                grid.innerHTML = crops.map(crop => {
+                    const keys = cropTransKeys[crop.name] || {};
+                    const displayName = keys.name ? t(keys.name, crop.name) : escapeHtml(crop.name);
+                    const displaySeason = keys.season ? t(keys.season, crop.season || '') : escapeHtml(crop.season || '');
+                    return `
+                    <a href="/crop/${crop.id}" class="crop-card" style="--crop-color: ${cropColors[crop.name] || '#4CAF50'}">
+                        <div class="crop-icon">
+                            <i class="fas ${cropIcons[crop.name] || 'fa-seedling'}"></i>
+                        </div>
+                        <h3>${escapeHtml(displayName)}</h3>
+                        <p class="crop-scientific">${escapeHtml(crop.scientific_name || '')}</p>
+                        <p class="crop-season"><i class="fas fa-calendar-alt"></i> ${escapeHtml(displaySeason)}</p>
+                        <div class="crop-stats">
+                            <span class="badge badge-danger"><i class="fas fa-virus"></i> ${crop.disease_count} ${t('n_diseases', 'Diseases')}</span>
+                            <span class="badge badge-warning"><i class="fas fa-bug"></i> ${crop.pest_count} ${t('n_pests', 'Pests')}</span>
+                        </div>
+                    </a>
+                `}).join('');
+            } catch (error) {
+                document.getElementById('cropsGrid').innerHTML =
+                    `<p class="error-msg">${t('failed_load', 'Failed to load crops. Please refresh the page.')}</p>`;
+            }
+        }
+
+        function performHeroSearch() {
+            const query = document.getElementById('heroSearch').value.trim();
+            if (query) {
+                window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        document.getElementById('heroSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performHeroSearch();
+        });
+    </script>
+</body>
+</html>

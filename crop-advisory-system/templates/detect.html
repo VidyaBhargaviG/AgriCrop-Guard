@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Disease Detection - CropGuard</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span data-i18n="app_title">CropGuard Advisory</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link"><i class="fas fa-home"></i> <span data-i18n="home">Home</span></a></li>
+                <li><a href="/search" class="nav-link"><i class="fas fa-search"></i> <span data-i18n="search">Search</span></a></li>
+                <li><a href="/detect" class="nav-link active"><i class="fas fa-camera"></i> <span data-i18n="detect_disease">Detect Disease</span></a></li>
+                <li class="nav-lang">
+                    <select id="langSelector" class="lang-select" aria-label="Select language">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="kn">ಕನ್ನಡ</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Detection Section -->
+    <section class="section detect-section">
+        <div class="container">
+            <h1 class="section-title"><i class="fas fa-camera"></i> <span data-i18n="ai_detection_title">AI Disease Detection</span></h1>
+            <p class="section-subtitle" data-i18n="ai_detection_subtitle">Upload a photo of the affected crop leaf or fruit for AI-powered disease identification</p>
+
+            <!-- Upload Area -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content" id="uploadContent">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3 data-i18n="drop_image">Drop an image here or click to upload</h3>
+                    <p data-i18n="file_support">Supports: JPG, PNG, JPEG, WEBP (Max 16MB)</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i> <span data-i18n="choose_file">Choose File</span>
+                    </button>
+                </div>
+                <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg,image/webp" style="display:none" aria-label="Upload image">
+                <div class="image-preview" id="imagePreview" style="display:none;">
+                    <img id="previewImg" alt="Preview of uploaded image">
+                    <button class="btn btn-sm btn-danger" onclick="clearUpload()"><i class="fas fa-times"></i> <span data-i18n="remove">Remove</span></button>
+                </div>
+            </div>
+
+            <!-- Crop Selector + Analyze Button -->
+            <div class="analyze-actions" id="analyzeActions" style="display:none;">
+                <div class="crop-select-wrapper">
+                    <label for="cropSelect"><i class="fas fa-seedling"></i> <span data-i18n="select_your_crop">Select your crop:</span></label>
+                    <select id="cropSelect" class="crop-select">
+                        <option value="" data-i18n="auto_detect">Auto-detect (all crops)</option>
+                        <option value="Paddy" data-i18n="paddy_rice">Paddy (Rice)</option>
+                        <option value="Chilli" data-i18n="chilli">Chilli</option>
+                        <option value="Coffee" data-i18n="coffee">Coffee</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-lg" onclick="analyzeImage()" id="analyzeBtn">
+                    <i class="fas fa-microscope"></i> <span data-i18n="analyze">Analyze Image</span>
+                </button>
+            </div>
+
+            <!-- Loading -->
+            <div class="detection-loading" id="detectionLoading" style="display:none;">
+                <div class="loading-animation">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p data-i18n="analyzing">Analyzing image... Please wait</p>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="detection-results" id="detectionResults" style="display:none;">
+                <h2><i class="fas fa-clipboard-check"></i> <span data-i18n="detection_results">Detection Results</span></h2>
+                <div class="results-note" id="resultsNote"></div>
+                <div class="predictions-list" id="predictionsList"></div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="detect-info">
+                <h2><i class="fas fa-info-circle"></i> <span data-i18n="how_ai_works">How AI Detection Works</span></h2>
+                <div class="info-steps">
+                    <div class="info-step">
+                        <div class="step-num">1</div>
+                        <h3 data-i18n="capture">Capture</h3>
+                        <p data-i18n="capture_desc">Take a clear photo of the affected leaf, fruit, or plant part.</p>
+                    </div>
+                    <div class="info-step">
+                        <div class="step-num">2</div>
+                        <h3 data-i18n="upload">Upload</h3>
+                        <p data-i18n="upload_desc">Upload the image using the upload area above.</p>
+                    </div>
+                    <div class="info-step">
+                        <div class="step-num">3</div>
+                        <h3 data-i18n="ai_analysis">AI Analysis</h3>
+                        <p data-i18n="ai_analysis_desc">Our CNN model analyzes the image patterns to identify diseases.</p>
+                    </div>
+                    <div class="info-step">
+                        <div class="step-num">4</div>
+                        <h3 data-i18n="get_results">Get Results</h3>
+                        <p data-i18n="get_results_desc">Receive disease predictions with treatment recommendations.</p>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <h3><i class="fas fa-lightbulb"></i> <span data-i18n="tips_title">Tips for Best Results</span></h3>
+                    <ul>
+                        <li data-i18n="tip1">Take photos in natural daylight</li>
+                        <li data-i18n="tip2">Focus on the affected area (leaf spots, discoloration)</li>
+                        <li data-i18n="tip3">Include both healthy and affected parts for comparison</li>
+                        <li data-i18n="tip4">Avoid blurry or dark images</li>
+                        <li data-i18n="tip5">Take close-up shots of symptoms</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p data-i18n="copyright">&copy; 2026 Crop Disease & Pest Advisory System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/app.js"></script>
+    <script>
+        let selectedFile = null;
+
+        // Drag and drop
+        const uploadArea = document.getElementById('uploadArea');
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFile(files[0]);
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert(t('invalid_file', 'Invalid file type. Please upload PNG, JPG, or WEBP images.'));
+                return;
+            }
+            if (file.size > 16 * 1024 * 1024) {
+                alert(t('file_too_large', 'File is too large. Maximum size is 16MB.'));
+                return;
+            }
+
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'flex';
+                document.getElementById('uploadContent').style.display = 'none';
+                document.getElementById('analyzeActions').style.display = 'flex';
+                document.getElementById('detectionResults').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearUpload() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('uploadContent').style.display = 'flex';
+            document.getElementById('analyzeActions').style.display = 'none';
+            document.getElementById('detectionResults').style.display = 'none';
+        }
+
+        async function analyzeImage() {
+            if (!selectedFile) return;
+
+            const btn = document.getElementById('analyzeBtn');
+            btn.disabled = true;
+            document.getElementById('detectionLoading').style.display = 'flex';
+            document.getElementById('detectionResults').style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            const selectedCrop = document.getElementById('cropSelect').value;
+            if (selectedCrop) formData.append('crop', selectedCrop);
+            formData.append('lang', currentLang);
+
+            try {
+                const response = await fetch('/api/detect', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                document.getElementById('detectionLoading').style.display = 'none';
+
+                if (data.success) {
+                    document.getElementById('detectionResults').style.display = 'block';
+                    document.getElementById('resultsNote').innerHTML =
+                        `<i class="fas fa-info-circle"></i> ${escapeHtml(data.message)}`;
+
+                    const list = document.getElementById('predictionsList');
+                    list.innerHTML = data.predictions.map((pred, i) => {
+                        const sevClass = (pred.severity_class || pred.severity || 'medium').toLowerCase();
+                        return `
+                        <div class="prediction-card">
+                            <div class="prediction-rank">#${i + 1}</div>
+                            <div class="prediction-content">
+                                <div class="prediction-header">
+                                    <h3>${escapeHtml(pred.disease)}</h3>
+                                    <span class="confidence-badge">${(pred.confidence * 100).toFixed(0)}% ${t('match', 'match')}</span>
+                                    <span class="severity-badge severity-${sevClass}">${escapeHtml(pred.severity)}</span>
+                                </div>
+                                <p class="prediction-crop"><i class="fas fa-seedling"></i> ${t('crop_label', 'Crop:')} ${escapeHtml(pred.crop)}</p>
+                                <p class="prediction-desc">${escapeHtml(pred.description)}</p>
+                                <div class="prediction-recommendation">
+                                    <h4><i class="fas fa-prescription-bottle-medical"></i> ${t('recommendation', 'Recommendation')}</h4>
+                                    <p>${escapeHtml(pred.recommendation)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;}).join('');
+                } else {
+                    document.getElementById('detectionResults').style.display = 'block';
+                    document.getElementById('predictionsList').innerHTML =
+                        `<p class="error-msg"><i class="fas fa-exclamation-circle"></i> ${escapeHtml(data.error)}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('detectionLoading').style.display = 'none';
+                document.getElementById('detectionResults').style.display = 'block';
+                document.getElementById('predictionsList').innerHTML =
+                    `<p class="error-msg"><i class="fas fa-exclamation-circle"></i> ${t('analysis_failed', 'Analysis failed. Please try again.')}</p>`;
+            }
+
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
